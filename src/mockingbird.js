@@ -1,3 +1,10 @@
+ /*!
+  * Angular Mockingbird
+  * Author:    Maciej Gurban
+  * License:   MIT
+  * Version:   0.1.0
+  * Origin:    https://github.com/maciej-gurban/angular-mockingbird
+  */
 class AngularMockingbird {
   constructor(angularMock) {
     if(!window.angular.mock) {
