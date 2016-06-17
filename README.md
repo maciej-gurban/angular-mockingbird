@@ -4,9 +4,9 @@ Simplified dependency injection and service mocking.
 
 ## Installation
 
-```
+````
 npm install angular-mockingbird --save-dev
-```
+````
 
 ## Dependencies
 + [Angular mocks](https://www.npmjs.com/package/angular-mocks)
@@ -16,9 +16,9 @@ npm install angular-mockingbird --save-dev
 
 ### Initialization
 
-```
+````javascript
 var am = new AngularMockingbird();
-```
+````
 
 ### Injection
 
@@ -26,15 +26,15 @@ var am = new AngularMockingbird();
 The `inject()` method returns an object; each service (or other injectable) is a property of that object, and is available at key matching requested service name.
 
 #### Syntax
-```
+````javascript
 am.inject(arg1[, arg][, ...]);
-```
+````
 
 **Parameters**
 
 + **arg1, arg2, ...** - Names of injectables to return.
 
-```
+````javascript
 // Without Mockingbird
 var ServiceFoo, ServiceBar;      
 beforeEach(inject(function(_ServiceFoo_, _ServiceBar_) {
@@ -52,7 +52,7 @@ beforeEach(function() {
   );
 });
 // Access each as 'di.ServiceFoo', 'di.ServiceBar'
-```
+````
 
 
 ### Mocking
@@ -60,15 +60,15 @@ beforeEach(function() {
 The `mock()` method replaces all functions found in object properties with Jasmine spies. **This method mutates the object passed to it**.
 
 #### Syntax
-```
+````javascript
 am.mock(arg);
-```
+````
 
 **Parameters**
 
 + **arg** - Service object (injected previously)
 
-```
+````javascript
 // Example service
 app.service(ServiceFoo, function() {
   this.foo = function() {};
@@ -83,11 +83,11 @@ spyOn(ServiceFoo, 'baz').and.stub();
 
 // With Mockingbird
 am.mock(di.ServiceFoo);
-```
+````
 
 ### Putting it all together
 
-```
+````javascript
 describe('test', function() {
   let am, di;
   beforeEach(module('myApp'));
@@ -104,13 +104,13 @@ describe('test', function() {
     expect(di.ServiceFoo.foo).toHaveBeenCalled();
   });
 });
-```
+````
 
 #### Notes
 
-To make it clear when we're dealing with service mocks, and when with their actual implementations, the following pattern could be used:
+To make it clear when we are dealing with service mocks, and when with their actual implementations, the following pattern could be used:
 
-```
+````javascript
 di = am.inject(
   'ServiceFoo'
 );
@@ -118,16 +118,16 @@ mock = am.inject(
   'ServiceBar'
 );
 am.mock(mock.ServiceBar);
-```
+````
 
 ### Development & testing
 
 Start to pulling in all the dependencies:
-```
+````
 npm install
-```
+````
 
 To run the tests, execute in the root of the project:
-```
+````
 npm test
-```
+````
