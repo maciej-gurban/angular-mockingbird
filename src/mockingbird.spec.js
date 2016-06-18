@@ -1,54 +1,32 @@
 describe('angular mockingbird', () => {
 
-  let amInit, notMocked;
-  beforeEach(() => {
-    module($provide => {
-      // Field values of a service that should not be mocked
-      notMocked = [
-        undefined,
-        null,
-        1,
-        true,
-        'foo',
-        Symbol(),
-        [],
-        {}
-      ];
-
-      // Valid services
-      $provide.service('ServiceFoo', function() {
-        this.foo = () => {};
-      });
-      $provide.service('ServiceBar', function(ServiceFoo) {
-        notMocked.forEach((value, index) => {
-          this[`notMocked${index}`] = value;
-        });
-        this.fn = () => {
-          ServiceFoo.foo();
-        };
-      });
-      // Injectables that pass through $injector, but cannot be mocked
-      $provide.value('injNumber', 1);
-      $provide.value('injBoolean', true);
-      $provide.value('injString', 'foo');
-      $provide.value('injSymbol', Symbol());
-      // Injectables that are iterable but cannot be mocked
-      $provide.value('injArray', []);
-      $provide.value('injObject', {});
-      $provide.service('injNoFields', () => {});
-      $provide.service('injNoMethods', () => {foo: true});
-      // Injectables that will be rejected by $injector are not tested For
-      // These include: undefined, null
+  let am;
+  const notMocked = [
+    1, 1.1, NaN, true, '', Symbol(), [], {}
+  ];
+  const ServiceFoo = function() {
+    this.foo = () => {};
+  };
+  const ServiceBar = function(ServiceFoo) {
+    notMocked.forEach((value, index) => {
+      this[`notMocked${index}`] = value;
     });
-    amInit = () => {
-      return new AngularMockingbird();
-    };
+    this.fn = ServiceFoo.foo;
+  };
+
+  angular.module('myApp', [])
+    .service('ServiceFoo', ServiceFoo)
+    .service('ServiceBar', ServiceBar);
+
+  beforeEach(() => {
+    angular.mock.module('myApp');
+    am = () => new Mockingbird();
   });
 
   describe('initialization', () => {
     let _ngMock  = {};
     let _jasmine = {};
-    // For test purposes, we need to erase objects made availabe on 'window'
+    // For test purposes, we need to erase objects made availabe on 'window'.
     // To prevent false results in consecutive test cases, we need to restore
     // the original values back to their rightful locations
     beforeEach(() => {
@@ -61,30 +39,30 @@ describe('angular mockingbird', () => {
     });
     it(`should throw if ngMock is missing`, () => {
       window.angular.mock = undefined;
-      expect(amInit).toThrowError('Module ngMock not found!');
+      expect(am).toThrowError('Module ngMock not found!');
     });
     it(`should throw if Jasmine is missing`, () => {
       window.jasmine = undefined;
-      expect(amInit).toThrowError('Jasmine not found!');
+      expect(am).toThrowError('Jasmine not found!');
     });
     it(`should throw if Jasmine older than v2 is found`, () => {
       window.jasmine.version = undefined;
-      expect(amInit).toThrowError('Jasmine 2 required!');
+      expect(am).toThrowError('Jasmine 2 required!');
     });
   });
 
   describe('injection', () => {
     it(`should throw if requested service hadn't been registered`, () => {
       expect(() => {
-        amInit().inject('NonexistentService');
+        am().inject('NonexistentService');
       }).toThrowError(`Service 'NonexistentService' not found.`)
     });
-    it(`should successfully return requested service`, () => {
-      let diContainer = amInit().inject('ServiceFoo');
+    it(`should successfully return an existing service`, () => {
+      let diContainer = am().inject('ServiceFoo');
       expect(diContainer.ServiceFoo).toBeDefined();
     });
-    it(`should successfully return multiple requested services`, () => {
-      let diContainer = amInit().inject('ServiceFoo', 'ServiceBar');
+    it(`should successfully return multiple existing services`, () => {
+      let diContainer = am().inject('ServiceFoo', 'ServiceBar');
       expect(diContainer.ServiceFoo).toBeDefined();
       expect(diContainer.ServiceBar).toBeDefined();
     });
@@ -93,44 +71,36 @@ describe('angular mockingbird', () => {
   describe('mocking', () => {
     let mock = (obj) => {
       return () => {
-        amInit().mock(obj);
+        am().mock(obj);
       };
     };
-    it(`should throw if provided injectable is not `, () => {
-      let diContainer = amInit().inject(
-        'injNumber',
-        'injBoolean',
-        'injString',
-        'injSymbol'
-      );
+    it(`should throw when mocking of invalid injectable attempted`, () => {
       let err = `Only valid services can be mocked.`;
-      expect(mock(diContainer.inj3)).toThrowError(err);
-      expect(mock(diContainer.inj4)).toThrowError(err);
-      expect(mock(diContainer.inj5)).toThrowError(err);
-      expect(mock(diContainer.inj6)).toThrowError(err);
-      expect(mock(diContainer.inj7)).toThrowError(err);
-      expect(mock(diContainer.inj8)).toThrowError(err);
+      expect(mock(1)).toThrowError(err);
+      expect(mock(1.1)).toThrowError(err);
+      expect(mock(NaN)).toThrowError(err);
+      expect(mock("")).toThrowError(err);
     });
-    it(`should throw if provided injectable has no methods`, () => {
-      let diContainer = amInit().inject(
-        'injNoFields',
-        'injNoMethods',
-        'injArray',
-        'injObject'
-      );
+    it(`should throw when valid injectable has no methods to mock`, () => {
       let err = `Found no methods to mock.`;
-      expect(mock(diContainer.injNoFields)).toThrowError(err);
-      expect(mock(diContainer.injNoMethods)).toThrowError(err);
-      expect(mock(diContainer.injArray)).toThrowError(err);
-      expect(mock(diContainer.injObject)).toThrowError(err);
+      expect(mock([])).toThrowError(err);
+      expect(mock({})).toThrowError(err);
+      expect(mock(() => {})).toThrowError(err);
+      expect(mock(() => {foo: true})).toThrowError(err);
     });
     it(`should replace methods with their mocks`, () => {
-      let diContainer = amInit().inject('ServiceBar');
+      let diContainer = am().inject('ServiceBar');
       mock(diContainer.ServiceBar)();
       expect(diContainer.ServiceBar.fn.and).toBeDefined();
     });
+    it(`should allow to override default mock of a method`, () => {
+      let diContainer = am().inject('ServiceBar');
+      mock(diContainer.ServiceBar)();
+      diContainer.ServiceBar.fn.and.returnValue(1);
+      expect(diContainer.ServiceBar.fn()).toEqual(1);
+    });
     it(`should preserve other fields`, () => {
-      let diContainer = amInit().inject('ServiceBar');
+      let diContainer = am().inject('ServiceBar');
       mock(diContainer.ServiceBar)();
       notMocked.map((value, index) => {
         expect(diContainer.ServiceBar[`notMocked${index}`]).toEqual(value);

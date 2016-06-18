@@ -1,15 +1,35 @@
 {
   "name": "angular-mockingbird",
-  "version": "0.1.0",
-  "description": "",
+  "author": "Maciej Gurban",
+  "version": "0.1.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maciej-gurban/angular-mockingbird"
+  },
+  "bugs": {
+    "url": "https://github.com/maciej-gurban/angular-mockingbird/issues"
+  },
+  "description": "Simplified dependency injection and service mocking.",
+  "keywords": [
+    "angular",
+    "jasmine",
+    "testing",
+    "mocking",
+    "mock",
+    "injection",
+    "inject"
+  ],
   "scripts": {
-    "build": "browserify ./src/mockingbird.js -o ./dist/mockingbird.js -t babelify --presets es2015",
-    "test": "karma start ./karma.conf.js"
+    "test": "karma start ./karma.conf.js",
+    "build": "babel ./src/mockingbird.js --out-file ./dist/mockingbird.js --debug --presets es2015",
+    "prepublish": "npm run build"
   },
   "main": "dist/mockingbird.js",
   "devDependencies": {
     "angular": "1.5.5",
     "angular-mocks": "1.5.5",
+    "babel-cli": "6.10.1",
     "babel-preset-es2015": "6.9.0",
     "babelify": "7.3.0",
     "jasmine-core": "2.2.0",

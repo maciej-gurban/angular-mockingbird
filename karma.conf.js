@@ -15,10 +15,15 @@ module.exports = function(config) {
     files: [
       './node_modules/angular/angular.js',
       './node_modules/angular-mocks/angular-mocks.js',
-      'src/angular-mockingbird.js',
-      'src/**/*.js'
+      './dist/mockingbird.js',
+      './src/mockingbird.spec.js'
     ],
 
+    plugins : [
+      'karma-babel-preprocessor',
+      'karma-chrome-launcher',
+      'karma-jasmine'
+    ],
 
     // list of files to exclude
     exclude: [
