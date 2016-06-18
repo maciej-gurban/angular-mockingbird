@@ -14,10 +14,24 @@ npm install angular-mockingbird --save-dev
 
 ## Usage
 
+### Importing
+
+You'll need to include `./dist/mockingbird.js` into `files` section in your karma.conf.js for the module to be available in your tests. Mockingbird needs to be imported after both Angular and Angular Mocks have been imported. Example:
+
+````javascript
+files: [
+  './node_modules/angular/angular.js',
+  './node_modules/angular-mocks/angular-mocks.js',
+  './dist/mockingbird.js',
+  ...
+  // your test files
+]
+````
+
 ### Initialization
 
 ````javascript
-var am = new AngularMockingbird();
+var am = new Mockingbird();
 ````
 
 ### Injection
@@ -92,7 +106,7 @@ describe('test', function() {
   let am, di;
   beforeEach(module('myApp'));
   beforeEach(function() {
-    am = new AngularMockingbird();
+    am = new Mockingbird();
     di = am.inject(
       'ServiceFoo',
       'ServiceBar'
