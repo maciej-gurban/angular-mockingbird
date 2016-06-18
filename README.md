@@ -22,7 +22,7 @@ You'll need to include `./dist/mockingbird.js` into `files` section in your karm
 files: [
   './node_modules/angular/angular.js',
   './node_modules/angular-mocks/angular-mocks.js',
-  './dist/mockingbird.js',
+  './node_modules/angular-mockingbird/dist/mockingbird.js',
   ...
   // your test files
 ]
@@ -31,6 +31,11 @@ files: [
 ### Initialization
 
 ````javascript
+// Import using Browserify (ES5):
+var Mockingbird = require('angular-mockingbird);
+// or using JS Modules (ES6):
+import Mockingbird from 'angular-mockingbird';
+
 var am = new Mockingbird();
 ````
 
