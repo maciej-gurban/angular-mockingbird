@@ -14,7 +14,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * Angular Mockingbird
  * Author:    Maciej Gurban
  * License:   MIT
- * Version:   0.1.1
+ * Version:   0.1.2
  * Origin:    https://github.com/maciej-gurban/angular-mockingbird
  */
 (function (window, angular) {
