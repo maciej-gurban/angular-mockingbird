@@ -32,7 +32,7 @@ files: [
 
 ````javascript
 // Import using Browserify (ES5):
-var Mockingbird = require('angular-mockingbird);
+var Mockingbird = require('angular-mockingbird');
 // or using JS Modules (ES6):
 import Mockingbird from 'angular-mockingbird';
 
