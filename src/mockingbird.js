@@ -2,10 +2,12 @@
   * Angular Mockingbird
   * Author:    Maciej Gurban
   * License:   MIT
-  * Version:   0.1.0
+  * Version:   0.1.1
   * Origin:    https://github.com/maciej-gurban/angular-mockingbird
   */
-class AngularMockingbird {
+(function(window, angular) {
+
+class Mockingbird {
   constructor(angularMock) {
     if(!window.angular.mock) {
       throw new Error('Module ngMock not found!');
@@ -55,4 +57,13 @@ class AngularMockingbird {
       service[prop] = jasmine.createSpy(prop).and.stub();
     });
   }
+}
+
+
+  window.Mockingbird = Mockingbird;
+
+})(window, angular);
+
+if (module && module.exports ) {
+  module.exports = Mockingbird;
 }
